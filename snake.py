@@ -7,6 +7,11 @@ from copy import deepcopy
 class Snake:
     
     def __init__(self,numSegments,startX,startY):
+        """
+        Creates a snake body with numSegments, with head at
+        startX and startY. The tail is strung out along the
+        x-axis behind the head.
+        """
         
         self.numSegments = numSegments
 
@@ -17,6 +22,10 @@ class Snake:
             self.body.append([startX-i, startY])
 
     def move(self,velocity):
+        """
+        Moves the snake head by velocity, and makes each piece of
+        the tail/body follow the preceding piece.
+        """
 
         # make a copy of the body
         old_body = deepcopy(self.body)
@@ -31,6 +40,13 @@ class Snake:
             self.body[i] = old_body[i-1]
 
         return
+
+    def grow(self):
+        """
+        Adds a piece to the tail.
+        """
+        
+        self.body.append(self.body[-1])
 
 # test
 if __name__ == "__main__":

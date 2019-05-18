@@ -3,6 +3,7 @@
 import curses
 import numpy as np
 import snake as Snake
+import random
 
 def checkCollisions(snake, xmax, ymax):
     """
@@ -11,10 +12,10 @@ def checkCollisions(snake, xmax, ymax):
 
     # Check walls
     for piece in snake.body:
-        if piece[0] > xmax or \
-            piece[1] > ymax or \
-            piece[0] < 0 or \
-            piece[1] < 0:
+        if piece[0] >= xmax or \
+            piece[1] >= ymax or \
+            piece[0] < 1 or \
+            piece[1] < 1:
             return True
 
     # check internal collisions
@@ -60,6 +61,7 @@ def snakeLoop():
     key = curses.KEY_RIGHT
     velocity = [1,0]
     keep_playing = True
+    food = [int(sizeX*.75),int(sizeY/2)]
 
     # Main Loop
     while keep_playing:
@@ -84,9 +86,19 @@ def snakeLoop():
 
         # Check collisions
         collision = checkCollisions(snake, sizeX, sizeY)
-        
+
         # Check for end-game conditions
         keep_playing = not collision
+
+        # Check for eating of food
+        if snake.body[0] == food:
+            snake.grow()
+            
+            while food in snake.body:
+                food = [
+                        random.randint(1, sizeX-1),
+                        random.randint(1, sizeY-1),
+                       ]
 
         ## Rendering
         # Draw snake
@@ -95,6 +107,9 @@ def snakeLoop():
 
             for piece in snake.body:
                 win.addch(piece[1],piece[0],curses.ACS_CKBOARD)
+        
+        # Draw food
+        win.addch(food[1],food[0],curses.ACS_PI)
 
     # end main loop
         
