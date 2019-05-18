@@ -2,11 +2,12 @@
 
 import curses
 import numpy as np
-import snake
+import snake as Snake
 
 # main loop
 def snakeLoop():
 
+    ## Environment setup
     # Curses setup
     stdscr = curses.initscr() # get screen
     curses.curs_set(False)
@@ -20,14 +21,15 @@ def snakeLoop():
     win.keypad(True)
     win.timeout(100)
 
-    # Initialize game
-    velocity = [1,0]
-    snake = Snake(4,int(sizeX/2),int(sizeY/2))
+    ## Initialize game
+    snake = Snake.Snake(4,int(sizeX/2),int(sizeY/2))
     key = curses.KEY_RIGHT
+    velocity = [1,0]
 
     # Main Loop
     while True:
 
+        ## Update events
         # check for updated key input
         new_key = win.getch()
         key = key if new_key == -1 else new_key
@@ -42,10 +44,15 @@ def snakeLoop():
         elif key == curses.KEY_LEFT:
             velocity = [-1,0]
 
+        ## Game logic
         snake.move(velocity)
 
-        # draw snake
-        snake.draw(win)
+        ## Rendering
+        # Draw snake
+        win.clear()
+
+        for piece in snake.body:
+            win.addch(piece[1],piece[0],curses.ACS_CKBOARD)
 
     # end main loop
         
