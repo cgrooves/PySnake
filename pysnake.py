@@ -4,6 +4,40 @@ import curses
 import numpy as np
 import snake as Snake
 
+def checkCollisions(snake, xmax, ymax):
+    """
+    Checks collisions with window walls and within the snake body.
+    """
+
+    # Check walls
+    for piece in snake.body:
+        if piece[0] > xmax or \
+            piece[1] > ymax or \
+            piece[0] < 0 or \
+            piece[1] < 0:
+            return True
+
+    # check internal collisions
+    return internalCollision(snake.body)
+
+def internalCollision(body):
+    """
+    Looks for duplicates in the param body.
+    Returns True if any duplicate is found.
+    """
+
+    final_list = []
+
+    for i in body:
+        if i not in final_list:
+            final_list.append(i)
+
+    if len(final_list) == len(body):
+        return False
+    else:
+        return True
+        
+
 # main loop
 def snakeLoop():
 
@@ -22,12 +56,13 @@ def snakeLoop():
     win.timeout(100)
 
     ## Initialize game
-    snake = Snake.Snake(4,int(sizeX/2),int(sizeY/2))
+    snake = Snake.Snake(10,int(sizeX/2),int(sizeY/2))
     key = curses.KEY_RIGHT
     velocity = [1,0]
+    keep_playing = True
 
     # Main Loop
-    while True:
+    while keep_playing:
 
         ## Update events
         # check for updated key input
@@ -47,12 +82,19 @@ def snakeLoop():
         ## Game logic
         snake.move(velocity)
 
+        # Check collisions
+        collision = checkCollisions(snake, sizeX, sizeY)
+        
+        # Check for end-game conditions
+        keep_playing = not collision
+
         ## Rendering
         # Draw snake
-        win.clear()
+        if keep_playing:
+            win.clear()
 
-        for piece in snake.body:
-            win.addch(piece[1],piece[0],curses.ACS_CKBOARD)
+            for piece in snake.body:
+                win.addch(piece[1],piece[0],curses.ACS_CKBOARD)
 
     # end main loop
         
@@ -61,6 +103,7 @@ def snakeLoop():
     stdscr.keypad(False)
     curses.echo()
     curses.endwin()
+    print("GAME OVER")
     quit()
 
 # Command-line invocation
